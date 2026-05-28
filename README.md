@@ -70,10 +70,3 @@ The savings message is shown only when the after-harvesting effective gain is lo
 - Four holdings are shown by default, with an option to view the full list.
 - One mock holding has a larger short-term loss so the harvesting behavior is easy to see during review.
 
-## Deployment
-
-Deployment link: _Add deployed URL here_
-
-## Screenshots
-
-Add screenshots of the desktop and mobile views here after deployment.
