@@ -10,7 +10,7 @@ export const holdingsData: Holding[] = [
     "averageBuyPrice": 1.5863185433764244,
     "stcg": {
       "balance": 0.0015339999999994802,
-      "gain": 0.12858552735441697
+      "gain": -16760.76
     },
     "ltcg": {
       "balance": 0,

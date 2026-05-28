@@ -4,12 +4,13 @@ import type { CapitalGains, Holding, SortDirection, SortKey } from '../types';
 import { calculateAfterHarvesting, calculateRealisedGain } from '../utils/calculations';
 
 const getRowId = (holding: Holding) => `${holding.coin}-${holding.coinName}`;
+const MIN_DISPLAYABLE_SAVINGS = 0.005;
 
 export const useTaxHarvesting = () => {
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [capitalGains, setCapitalGains] = useState<CapitalGains | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [sortKey, setSortKey] = useState<SortKey>('stcg');
+  const [sortKey, setSortKey] = useState<SortKey>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -47,14 +48,21 @@ export const useTaxHarvesting = () => {
 
   const visibleHoldings = showAll ? sortedHoldings : sortedHoldings.slice(0, 4);
 
+  const selectedHoldings = useMemo(() => {
+    return holdings.filter((holding) => selectedRows.has(getRowId(holding)));
+  }, [holdings, selectedRows]);
+
   const afterHarvesting = useMemo(() => {
     if (!capitalGains) return null;
-    return calculateAfterHarvesting(capitalGains, holdings, selectedRows);
-  }, [capitalGains, holdings, selectedRows]);
+    return calculateAfterHarvesting(capitalGains, selectedHoldings);
+  }, [capitalGains, selectedHoldings]);
 
   const preRealisedGain = capitalGains ? calculateRealisedGain(capitalGains) : 0;
   const afterRealisedGain = afterHarvesting ? calculateRealisedGain(afterHarvesting) : 0;
-  const savings = preRealisedGain - afterRealisedGain;
+  const savings =
+    preRealisedGain - afterRealisedGain >= MIN_DISPLAYABLE_SAVINGS
+      ? preRealisedGain - afterRealisedGain
+      : 0;
 
   const toggleRow = (holding: Holding) => {
     const rowId = getRowId(holding);
@@ -87,6 +95,7 @@ export const useTaxHarvesting = () => {
     visibleHoldings,
     capitalGains,
     afterHarvesting,
+    selectedHoldings,
     selectedRows,
     sortKey,
     sortDirection,
